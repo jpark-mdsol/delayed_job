@@ -70,8 +70,13 @@ module Delayed
 
       def payload_object
         Rails.logger.info("> delayed_job-4.1.8/../base.rb:72:: #payload_object <")
-        @payload_object ||= YAML.load_dj(handler)
-        Rails.logger.info("> delayed_job-4.1.8/../base.rb:72:: @payload_object loaded successfully <")
+        begin
+          @payload_object ||= YAML.load_dj(handler)
+        rescue => e
+          Rails.logger.info("> delayed_job-4.1.8/../base.rb:76:: YAML.load_dj exception: #{backtrace} <")
+        end
+        Rails.logger.info("> delayed_job-4.1.8/../base.rb:78:: @payload_object loaded successfully <")
+        return @payload_object
       rescue TypeError, LoadError, NameError, ArgumentError, SyntaxError, Psych::SyntaxError => e
         raise DeserializationError, "Job failed to load: #{e.message}. Handler: #{handler.inspect}"
       end
