@@ -13,7 +13,14 @@ end
 
 module Psych
   def self.load_dj(yaml)
-    result = parse(yaml)
+    STDOUT.puts ("> delayed_job/../psych_ext.rb:16:: #self.load_dj <")
+    result =
+      begin
+        parse(yaml)
+      rescue => e
+        STDOUT.puts ("> delayed_job/../psych_ext.rb:20:: parse(yml) error backtrace: #{e.backtrace} <")
+        nil
+      end
     result ? Delayed::PsychExt::ToRuby.create.accept(result) : result
   end
 end
